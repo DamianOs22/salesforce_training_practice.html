@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b4775" />
+  <meta name="description" content="Salesforce Training Practice Test for Splunk, Debug Tools, SSO, SFDX & Metadata Deployment, and SOAP API." />
+  <title>Salesforce Training — Practice Test</title>
+  <style>
+    :root{
+      --navy:#0b4775;
+      --navy-deep:#08395f;
+      --navy-card:#164f7b;
+      --navy-card-2:#1a5685;
+      --blue:#1686d9;
+      --blue-2:#2c94eb;
+      --sky:#8cd3ff;
+      --white:#ffffff;
+      --text-soft:#c9e2f6;
+      --text-dim:#a7c9e3;
+      --border:rgba(150,208,247,.28);
+      --track:rgba(152,199,231,.19);
+      --good:#6fe0b0;
+      --bad:#ff9a9a;
+      --warning:#ffd480;
+      --shadow:0 16px 40px rgba(2,31,55,.20);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--white);
+      background:
+        radial-gradient(circle at 70% -15%, rgba(43,139,207,.20), transparent 34%),
+        linear-gradient(180deg, #0b4775 0%, #0a426f 48%, #093c66 100%);
+      font-family: ui-rounded, "SF Pro Rounded", "SF Pro Display", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height:100vh;
+      letter-spacing:.01em;
+    }
+
+    button,input{font:inherit}
+    button{color:inherit}
+
+    .shell{
+      width:min(760px, 100%);
+      margin:0 auto;
+      min-height:100vh;
+      border-top:2px solid rgba(255,255,255,.18);
+    }
+
+    .topbar{
+      padding:28px 30px 26px;
+      border-bottom:1px solid rgba(188,225,249,.20);
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .brand-icon{
+      width:72px;
+      height:72px;
+      border:4px solid #84c8fa;
+      border-radius:24px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      box-shadow:inset 0 0 0 5px rgba(104,188,247,.08);
+    }
+
+    .sparkle{
+      width:32px;
+      height:32px;
+      position:relative;
+    }
+    .sparkle:before,.sparkle:after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:white;
+      clip-path:polygon(50% 0,63% 36%,100% 50%,63% 64%,50% 100%,37% 64%,0 50%,37% 36%);
+    }
+    .sparkle:after{
+      transform:scale(.55) rotate(45deg);
+      opacity:.35;
+    }
+
+    .brand-copy h1{
+      margin:0;
+      font-size:clamp(1.45rem,4vw,2.05rem);
+      line-height:1.03;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      font-weight:900;
+    }
+    .brand-copy p{
+      margin:7px 0 0;
+      color:#badcf5;
+      font-size:1rem;
+      text-transform:uppercase;
+      letter-spacing:.19em;
+      font-weight:600;
+    }
+
+    .content{padding:28px 24px 36px}
+    .screen{display:none}
+    .screen.active{display:block}
+
+    .section-kicker{
+      margin:0;
+      font-size:.93rem;
+      text-transform:uppercase;
+      letter-spacing:.19em;
+      font-weight:900;
+    }
+    .section-count{
+      margin:5px 0 26px;
+      color:#b8d8ef;
+      font-size:1rem;
+      font-weight:600;
+    }
+
+    .study-list{
+      display:grid;
+      gap:14px;
+    }
+
+    .study-row{
+      width:100%;
+      border:0;
+      background:transparent;
+      padding:0;
+      cursor:pointer;
+      text-align:left;
+      display:grid;
+      grid-template-columns:44px minmax(0,1fr) 92px;
+      align-items:center;
+      gap:14px;
+      border-radius:22px;
+      transition:transform .16s ease, background .16s ease;
+    }
+
+    .study-row:hover{transform:translateY(-1px)}
+    .study-row.selected{
+      padding:18px 18px 18px 16px;
+      background:linear-gradient(135deg,#1587d5,#1680c9);
+      box-shadow:var(--shadow);
+      border-left:5px solid #8fd7ff;
+    }
+
+    .section-icon{
+      width:38px;
+      text-align:center;
+      color:#a9ddff;
+      font-size:1.7rem;
+      font-weight:300;
+    }
+    .study-row.selected .section-icon{color:white}
+
+    .section-name{
+      font-size:1.08rem;
+      line-height:1.28;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .section-meta{
+      color:#c2dcf0;
+      font-size:.83rem;
+      line-height:1.2;
+      font-weight:700;
+    }
+
+    .percent-pill{
+      justify-self:end;
+      width:88px;
+      padding:10px 8px 9px;
+      background:rgba(129,185,224,.22);
+      border-radius:18px;
+      text-align:center;
+      line-height:1.08;
+    }
+
+    .study-row.selected .percent-pill{
+      background:rgba(111,190,243,.35);
+    }
+
+    .percent-pill strong{
+      display:block;
+      font-size:1.05rem;
+      font-weight:900;
+    }
+    .percent-pill span{
+      display:block;
+      margin-top:4px;
+      color:#d6ebfa;
+      font-size:.75rem;
+      font-weight:700;
+    }
+
+    .exam-card{
+      margin-top:26px;
+      border:1px solid rgba(163,215,247,.40);
+      border-radius:22px;
+      background:rgba(9,59,99,.55);
+      padding:18px 20px;
+      display:grid;
+      grid-template-columns:62px minmax(0,1fr) 32px;
+      align-items:center;
+      gap:16px;
+      cursor:pointer;
+      width:100%;
+      text-align:left;
+    }
+    .exam-icon{
+      height:62px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:#2693ef;
+      font-size:1.7rem;
+    }
+    .exam-title{font-size:1.15rem;font-weight:900}
+    .exam-sub{margin-top:4px;color:#c3ddf1;font-size:.85rem;font-weight:650}
+    .arrow{font-size:2rem;line-height:1;text-align:right}
+
+    .progress-card{
+      border:1px solid rgba(153,208,242,.32);
+      background:linear-gradient(160deg,rgba(28,82,123,.90),rgba(15,66,105,.92));
+      border-radius:26px;
+      padding:24px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .progress-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .progress-head h2{
+      margin:0;
+      font-size:.92rem;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight:900;
+    }
+    .tiny-pill{
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(173,211,238,.18);
+      color:#d9ebf9;
+      font-size:.82rem;
+      font-weight:900;
+    }
+
+    .progress-title{
+      margin:0 0 18px;
+      font-size:1.08rem;
+      line-height:1.3;
+      font-weight:900;
+    }
+
+    .progress-grid{
+      display:grid;
+      grid-template-columns:160px 1fr;
+      gap:24px;
+      align-items:center;
+    }
+
+    .donut{
+      --p:0;
+      width:136px;
+      height:136px;
+      border-radius:50%;
+      background:conic-gradient(#36a4f4 calc(var(--p)*1%), rgba(135,190,225,.20) 0);
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+    .donut:before{
+      content:"";
+      width:100px;
+      height:100px;
+      border-radius:50%;
+      background:#0b4775;
+      position:absolute;
+      box-shadow:inset 0 0 0 2px rgba(90,176,236,.10);
+    }
+    .donut span{
+      position:relative;
+      z-index:1;
+      font-size:1.75rem;
+      font-weight:900;
+    }
+
+    .big-stats{
+      display:grid;
+      gap:8px;
+    }
+    .big-stat{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      color:#e5f3fd;
+      font-weight:650;
+    }
+    .big-stat strong{
+      min-width:28px;
+      font-size:1.55rem;
+      color:white;
+      font-weight:900;
+    }
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:18px;
+    }
+    .mini-card{
+      border:1px solid rgba(152,211,247,.26);
+      background:rgba(73,119,156,.24);
+      border-radius:16px;
+      padding:14px;
+    }
+    .mini-label{
+      color:#a9cee8;
+      font-size:.73rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+    .mini-value{
+      font-size:1.2rem;
+      font-weight:900;
+    }
+
+    .divider{
+      height:1px;
+      background:rgba(171,215,242,.20);
+      margin:22px 0 18px;
+    }
+
+    .overall-line{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      font-size:.83rem;
+      color:#d3e7f6;
+      font-weight:650;
+    }
+    .overall-line strong{color:white}
+
+    .thin-track{
+      height:10px;
+      border-radius:999px;
+      background:var(--track);
+      margin-top:9px;
+      overflow:hidden;
+    }
+    .thin-bar{
+      height:100%;
+      width:0;
+      border-radius:inherit;
+      background:#30a0f4;
+      transition:width .25s ease;
+    }
+
+    .wide-btn{
+      width:100%;
+      min-height:54px;
+      margin-top:18px;
+      border:1px solid rgba(165,216,248,.28);
+      background:rgba(67,113,150,.20);
+      border-radius:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .wide-btn.primary{
+      background:#2292ec;
+      border-color:#2292ec;
+    }
+
+    .back-btn{
+      border:0;
+      background:transparent;
+      padding:0;
+      margin-bottom:18px;
+      color:#c6e2f5;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .quiz-top{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+      margin-bottom:14px;
+    }
+    .quiz-mode{
+      font-size:.74rem;
+      color:#a9d1eb;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:900;
+    }
+    .quiz-pos{
+      font-size:.83rem;
+      color:#d7eaf8;
+      font-weight:900;
+    }
+
+    .quiz-progress{
+      height:8px;
+      background:var(--track);
+      border-radius:999px;
+      overflow:hidden;
+      margin-bottom:22px;
+    }
+    .quiz-progress > div{
+      height:100%;
+      width:0;
+      background:#2c9df2;
+      transition:width .2s ease;
+    }
+
+    .question-card{
+      border:1px solid rgba(160,213,246,.27);
+      border-radius:24px;
+      padding:22px;
+      background:rgba(22,79,123,.75);
+    }
+    .question-class{
+      color:#8fd0fa;
+      font-size:.75rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    .question-text{
+      font-size:1.15rem;
+      line-height:1.4;
+      font-weight:900;
+      margin-bottom:18px;
+    }
+
+    .answers{
+      display:grid;
+      gap:10px;
+    }
+    .answer{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      border:1px solid rgba(163,211,241,.25);
+      background:rgba(10,61,100,.45);
+      border-radius:16px;
+      padding:13px 14px;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .answer:hover{background:rgba(39,113,167,.38)}
+    .answer input{margin-top:3px;accent-color:#33a3f3;transform:scale(1.12)}
+    .answer.correct{border-color:rgba(111,224,176,.75);background:rgba(35,151,110,.24)}
+    .answer.wrong{border-color:rgba(255,154,154,.75);background:rgba(176,60,60,.24)}
+
+    .feedback{
+      display:none;
+      margin-top:16px;
+      border-radius:16px;
+      padding:14px;
+      border:1px solid rgba(164,212,243,.22);
+      background:rgba(4,51,86,.45);
+      color:#e2f1fb;
+      font-size:.9rem;
+      line-height:1.55;
+    }
+    .feedback.show{display:block}
+    .feedback strong{color:white}
+
+    .quiz-actions{
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+    }
+    .quiz-actions button{
+      flex:1;
+      min-height:48px;
+      border-radius:15px;
+      border:1px solid rgba(163,212,244,.28);
+      background:rgba(75,121,158,.20);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .quiz-actions .primary{
+      background:#2193ec;
+      border-color:#2193ec;
+    }
+    button:disabled{opacity:.45;cursor:not-allowed}
+
+    .result-hero{
+      text-align:center;
+      padding:10px 0 18px;
+    }
+    .result-score{
+      font-size:3rem;
+      font-weight:950;
+      margin:4px 0;
+    }
+    .result-label{color:#c4def1;font-weight:700}
+    .result-message{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(71,120,157,.20);
+      color:#d9ebf8;
+      line-height:1.55;
+    }
+
+    .result-breakdown{
+      display:grid;
+      gap:10px;
+      margin-top:16px;
+    }
+    .result-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:12px;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid rgba(161,211,243,.14);
+    }
+    .result-row:last-child{border-bottom:0}
+    .result-row strong{font-size:.9rem}
+    .result-row span{color:#c8e2f4;font-size:.84rem;font-weight:800}
+
+    .note{
+      margin-top:20px;
+      color:#a9cde6;
+      text-align:center;
+      font-size:.76rem;
+    }
+
+    @media (max-width:560px){
+      .topbar{padding:22px 20px}
+      .brand-icon{width:62px;height:62px;border-radius:20px}
+      .brand-copy p{font-size:.78rem}
+      .content{padding:24px 18px 30px}
+      .study-row{grid-template-columns:36px minmax(0,1fr) 78px}
+      .study-row.selected{padding:16px 12px}
+      .percent-pill{width:76px}
+      .progress-card{padding:20px}
+      .progress-grid{grid-template-columns:118px 1fr;gap:14px}
+      .donut{width:112px;height:112px}
+      .donut:before{width:82px;height:82px}
+      .donut span{font-size:1.45rem}
+      .big-stat strong{font-size:1.35rem}
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand-icon" aria-hidden="true"><div class="sparkle"></div></div>
+    <div class="brand-copy">
+      <h1>Salesforce<br>Training</h1>
+      <p>Practice Test</p>
+    </div>
+  </header>
+
+  <main class="content">
+    <section id="homeScreen" class="screen active">
+      <h2 class="section-kicker">Study Sections</h2>
+      <p id="totalQuestionsLabel" class="section-count">35 questions</p>
+
+      <div id="studyList" class="study-list"></div>
+
+      <button id="examModeBtn" class="exam-card" type="button">
+        <div class="exam-icon">⏱</div>
+        <div>
+          <div class="exam-title">Mock Assessment</div>
+          <div class="exam-sub">35 questions · all training topics</div>
+        </div>
+        <div class="arrow">→</div>
+      </button>
+
+      <div class="note">Progress is saved automatically in this browser.</div>
+    </section>
+
+    <section id="sectionScreen" class="screen">
+      <button id="backFromSection" class="back-btn" type="button">← Back to study sections</button>
+
+      <div class="progress-card">
+        <div class="progress-head">
+          <h2>Section Progress</h2>
+          <div id="sectionCounterPill" class="tiny-pill">0 / 0</div>
+        </div>
+
+        <h3 id="sectionTitle" class="progress-title">Class</h3>
+
+        <div class="progress-grid">
+          <div id="sectionDonut" class="donut" style="--p:0">
+            <span id="sectionPercent">0%</span>
+          </div>
+          <div class="big-stats">
+            <div class="big-stat"><strong id="answeredNum">0</strong><span id="answeredText">/ 0 answered</span></div>
+            <div class="big-stat"><strong id="correctNum">0</strong><span>correct</span></div>
+            <div class="big-stat"><strong id="remainingNum">0</strong><span>remaining</span></div>
+          </div>
+        </div>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <div class="mini-label">Accuracy</div>
+            <div id="accuracyValue" class="mini-value">—</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-label">Status</div>
+            <div id="statusValue" class="mini-value">Not started</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="overall-line">
+          <span>Overall study progress</span>
+          <strong id="overallProgressText">0 / 35 · 0%</strong>
+        </div>
+        <div class="thin-track"><div id="overallBar" class="thin-bar"></div></div>
+
+        <button id="startSectionBtn" class="wide-btn primary" type="button">Start this section</button>
+        <button id="resetSectionBtn" class="wide-btn" type="button">↻ Reset this section</button>
+      </div>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <button id="backFromQuiz" class="back-btn" type="button">← Exit quiz</button>
+
+      <div class="quiz-top">
+        <div>
+          <div id="quizModeLabel" class="quiz-mode">Study mode</div>
+          <div id="quizClassLabel" style="font-weight:900;margin-top:3px">Class</div>
+        </div>
+        <div id="quizPosition" class="quiz-pos">1 / 7</div>
+      </div>
+
+      <div class="quiz-progress"><div id="quizBar"></div></div>
+
+      <div class="question-card">
+        <div id="questionType" class="question-class">Concept</div>
+        <div id="questionText" class="question-text"></div>
+        <form id="answersForm" class="answers"></form>
+
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+
+        <div class="quiz-actions">
+          <button id="checkBtn" class="primary" type="button">Check answer</button>
+          <button id="nextBtn" type="button" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <button id="backFromResults" class="back-btn" type="button">← Back to study sections</button>
+
+      <div class="progress-card">
+        <div class="result-hero">
+          <div class="section-kicker">Assessment Result</div>
+          <div id="resultScore" class="result-score">0%</div>
+          <div id="resultFraction" class="result-label">0 / 0 correct</div>
+          <div id="resultMessage" class="result-message"></div>
+        </div>
+
+        <div class="divider"></div>
+        <h3 style="margin:0;font-size:1rem">Performance by class</h3>
+        <div id="resultBreakdown" class="result-breakdown"></div>
+
+        <button id="retryExamBtn" class="wide-btn primary" type="button">Retry mock assessment</button>
+        <button id="returnHomeBtn" class="wide-btn" type="button">Study sections</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const SECTIONS = [
+  { id:'splunk', short:'Class 01', name:'Splunk', icon:'◇' },
+  { id:'debug', short:'Class 02', name:'Debug Tools', icon:'✦' },
+  { id:'sso', short:'Class 03', name:'Single Sign-On (SSO)', icon:'▥' },
+  { id:'sfdx', short:'Class 04', name:'SFDX & Metadata Deployment', icon:'◎' },
+  { id:'soap', short:'Class 05', name:'SOAP API & Integration', icon:'↗' }
+];
+
+const questions = [
+  {id:'sp1',s:'splunk',t:'Concept',q:'What is the correct basic Splunk data flow?',a:['Forwarder → Indexer → Search Head','Indexer → Forwarder → Search Head','Search Head → Forwarder → Indexer','Forwarder → Search Head → Indexer'],correct:0,e:'Forwarders collect and send logs, Indexers process and store them, and Search Heads are used by engineers to search the indexed data.'},
+  {id:'sp2',s:'splunk',t:'Concept',q:'Which Splunk component processes, organizes, and stores incoming log data?',a:['Forwarder','Indexer','Search Head','Workbench'],correct:1,e:'The Indexer processes and stores incoming data so it can be searched efficiently.'},
+  {id:'sp3',s:'splunk',t:'Scenario',q:'You need maximum available detail during a deep Splunk investigation. Which execution mode should you choose?',a:['Fast','Smart','Verbose','Debug Only'],correct:2,e:'Verbose mode provides the most detail and field discovery, although it is the slowest.'},
+  {id:'sp4',s:'splunk',t:'Scenario',q:'A Splunk search is extremely slow. What should you check first based on the training best practices?',a:['Increase the timeframe','Use All Time','Narrow the timeframe and filters','Add a leading wildcard'],correct:2,e:'A narrow timeframe and specific early filters reduce the amount of data Splunk must process.'},
+  {id:'sp5',s:'splunk',t:'Command',q:'Which SPL command would you use to calculate the number of events grouped by error_code?',a:['table','stats','dedup','timechart'],correct:1,e:'stats performs aggregations such as count by error_code.'},
+  {id:'sp6',s:'splunk',t:'Command',q:'Which SPL command is best for identifying an error spike over time?',a:['dedup','table','timechart','index'],correct:2,e:'timechart performs statistical aggregation over time and is useful for spotting spikes or trends.'},
+  {id:'sp7',s:'splunk',t:'Concept',q:'According to the training, which timezone should engineers keep in their Splunk preferences?',a:['PST','Local timezone','GMT','CST'],correct:2,e:'The training emphasized GMT so engineers across regions can correlate customer timestamps consistently.'},
+
+  {id:'db1',s:'debug',t:'Scenario',q:'A Salesforce Apex Trigger fails when a user deletes a Case. Which tool should you think of first?',a:['Email Logs','Debug Logs + Trace Flag','HAR only','Support App'],correct:1,e:'Debug Logs with a Trace Flag are appropriate for investigating Apex and Trigger execution.'},
+  {id:'db2',s:'debug',t:'Scenario',q:'A background automation is failing without a user directly triggering it. Which Trace Flag entity should you consider?',a:['User','Apex Class only','Automated Process','Email Log'],correct:2,e:'Automated Process is used for processes that execute in the background without direct user intervention.'},
+  {id:'db3',s:'debug',t:'Concept',q:'Which debug level was recommended in the training for a deep-dive investigation of a relevant category?',a:['NONE','WARN','INFO','FINEST'],correct:3,e:'FINEST captures the greatest level of detail for the selected category.'},
+  {id:'db4',s:'debug',t:'Scenario',q:'An LWC throws a JavaScript error in the browser. What should you inspect first?',a:['Browser Console','Email Logs','Change Sets','QueryAll'],correct:0,e:'Console Logs are appropriate for frontend JavaScript, LWC, and browser execution errors.'},
+  {id:'db5',s:'debug',t:'Scenario',q:'A button sends an HTTP request that fails. You need headers, payload, and response code. Which evidence is most useful?',a:['HAR / Network log','Apex Trigger','Inbound Change Set','Email CSV'],correct:0,e:'HAR captures browser network requests, responses, headers, payloads, and status codes.'},
+  {id:'db6',s:'debug',t:'Procedure',q:'What is the crucial browser setting to enable before reproducing an issue when capturing a HAR?',a:['Verbose Mode','Preserve Log / Keep Log','Debug Only','Single Package'],correct:1,e:'Preserve Log prevents requests from disappearing when the page reloads.'},
+  {id:'db7',s:'debug',t:'Scenario',q:'A customer says a Salesforce email was sent but never arrived. Which tool should you start with?',a:['Email Logs','Change Sets','SFDX','LWC Console'],correct:0,e:'Email Logs are designed to investigate Salesforce email delivery and failure events.'},
+
+  {id:'ss1',s:'sso',t:'Concept',q:'In a SAML SSO flow, who authenticates the user?',a:['Service Provider','Identity Provider','Search Head','SOAP Client'],correct:1,e:'The Identity Provider (IdP) authenticates the user.'},
+  {id:'ss2',s:'sso',t:'Concept',q:'In a typical SAML flow, which direction is correct?',a:['IdP sends Request → SP sends Response','SP sends Request → IdP sends Response','SP sends both Request and Response','User sends the SAML Response directly'],correct:1,e:'The Service Provider sends an authentication request and the Identity Provider returns the SAML response.'},
+  {id:'ss3',s:'sso',t:'Scenario',q:'The SAML Assertion Validator reports an Audience mismatch. What should you check first?',a:['Entity ID','Debug Level','API Version','Mail Event'],correct:0,e:'Audience mismatches are closely associated with the configured Entity ID or allowed audience.'},
+  {id:'ss4',s:'sso',t:'Scenario',q:'The IdP authenticates successfully, but Salesforce cannot map the identity to the correct User. What should you verify?',a:['Federation ID','timechart','Server URL','Outbound Change Set'],correct:0,e:'When Federation ID is used as the identity type, the assertion value must match the Salesforce User Federation ID.'},
+  {id:'ss5',s:'sso',t:'Scenario',q:'A user receives a generic SAML login error. What is the main Salesforce troubleshooting tool from the training?',a:['SAML Assertion Validator','sf org list','Email Logs','EmptyRecycleBin'],correct:0,e:'The SAML Assertion Validator helps identify which part of SAML validation failed.'},
+  {id:'ss6',s:'sso',t:'Concept',q:'What does JIT provisioning do?',a:['Handles user provisioning during SSO login','Stores Splunk indexes','Deploys metadata','Deletes expired sessions'],correct:0,e:'Just-In-Time provisioning handles user provisioning during the SAML authentication process.'},
+  {id:'ss7',s:'sso',t:'Scenario',q:'A company needs complex logic to assign Profiles or Permission Sets during JIT provisioning. What should you think of?',a:['Standard JIT only','Custom SAML JIT with Apex Handler','HAR only','Partner WSDL'],correct:1,e:'The training used a custom Apex JIT handler for more complex provisioning logic.'},
+
+  {id:'sf1',s:'sfdx',t:'Command',q:'Which command authenticates an Org using browser-based login?',a:['sf org list','sf org login web','sf org logout','sf org list limits'],correct:1,e:'sf org login web opens the browser-based Salesforce authentication flow.'},
+  {id:'sf2',s:'sfdx',t:'Concept',q:'What is the main purpose of package.xml in this training?',a:['Define which metadata to retrieve','Store user passwords','Analyze HAR files','Authenticate SAML assertions'],correct:0,e:'package.xml is the manifest specifying the metadata components involved in retrieval.'},
+  {id:'sf3',s:'sfdx',t:'Scenario',q:'An LWC was deployed but does not appear in Lightning App Builder. What should you check?',a:['isExposed and targets in meta.xml','Session ID','Email Mail Event','QueryAll'],correct:0,e:'The training emphasized <isExposed>true</isExposed> together with appropriate Lightning targets.'},
+  {id:'sf4',s:'sfdx',t:'Concept',q:'Which direction correctly describes metadata retrieval?',a:['Local → Salesforce Org','Salesforce Org → Local','Destination → Source only','Workbench → Splunk'],correct:1,e:'Retrieve means bringing metadata from the Salesforce Org into the local project or ZIP.'},
+  {id:'sf5',s:'sfdx',t:'Scenario',q:'A deployment from Org A to Org B fails. Which org should you focus on for the deployment logs according to the training?',a:['Org A, the source','Org B, the destination','Neither','Only the Demo Org'],correct:1,e:'The training emphasized reviewing logs from the destination organization where the deployment is processed.'},
+  {id:'sf6',s:'sfdx',t:'Concept',q:'Where is an Outbound Change Set configured?',a:['Destination Org','Source Org','Splunk Search Head','SoapUI'],correct:1,e:'Outbound means metadata is going out of the source Org.'},
+  {id:'sf7',s:'sfdx',t:'Troubleshooting',q:'A deployment fails because a required Custom Field is missing from the target Org. What is the likely issue?',a:['Missing metadata dependency','Expired SOAP Session ID','Audience mismatch','HAR corruption'],correct:0,e:'Missing dependencies such as referenced fields, objects, or labels can cause deployment failures.'},
+
+  {id:'so1',s:'soap',t:'Concept',q:'What is the difference between authentication and authorization?',a:['Authentication = permissions; Authorization = identity','Authentication = identity; Authorization = permitted actions','They are identical','Authentication applies only to SSO'],correct:1,e:'Authentication verifies who the user is; authorization determines what the authenticated user can do.'},
+  {id:'so2',s:'soap',t:'Concept',q:'Which WSDL is strongly typed?',a:['Partner WSDL','Enterprise WSDL','HAR WSDL','SAML WSDL'],correct:1,e:'The Enterprise WSDL is strongly typed and reflects specific objects and fields.'},
+  {id:'so3',s:'soap',t:'Concept',q:'Which WSDL is more loosely typed and generic?',a:['Enterprise WSDL','Partner WSDL','Metadata WSDL only','Neither'],correct:1,e:'The Partner WSDL is the loosely typed option described in the training.'},
+  {id:'so4',s:'soap',t:'Authentication',q:'What important value returned by SOAP login is used in subsequent API calls?',a:['Federation ID','Session ID','Deployment ID','Mail Event'],correct:1,e:'The Session ID obtained from login is sent with subsequent SOAP operations.'},
+  {id:'so5',s:'soap',t:'Scenario',q:'A SOAP operation fails because the session has expired. Which error should you associate with this?',a:['Invalid Session ID','Audience Mismatch','Required Fields Missing','Field Entity Lock'],correct:0,e:'An expired or invalid SOAP session can produce an Invalid Session ID error.'},
+  {id:'so6',s:'soap',t:'Concept',q:'What is the difference between Query and QueryAll according to the training?',a:['Query includes deleted; QueryAll does not','Query = active records; QueryAll = active + deleted records','They are identical','QueryAll only returns metadata'],correct:1,e:'Query fetches active records; QueryAll also includes deleted records such as those in the Recycle Bin.'},
+  {id:'so7',s:'soap',t:'Scenario',q:'A SOAP request contains an invalid or incompatible field value such as a mismatched picklist value. What error concept should you think of?',a:['Field Integrity Exception','Invalid Session ID','Server Unavailable','Audience Mismatch'],correct:0,e:'The training associated Field Integrity Exception with invalid or incompatible field values.'}
+];
+
+const STORAGE_KEY = 'salesforce_training_practice_v2';
+
+function emptyState(){
+  const progress={};
+  SECTIONS.forEach(s=>progress[s.id]={answered:{},correct:{}});
+  return {progress};
+}
+function loadState(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!parsed || !parsed.progress) return emptyState();
+    SECTIONS.forEach(s=>{
+      if(!parsed.progress[s.id]) parsed.progress[s.id]={answered:{},correct:{}};
+      parsed.progress[s.id].answered ||= {};
+      parsed.progress[s.id].correct ||= {};
+    });
+    return parsed;
+  }catch(e){return emptyState()}
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
+
+let state=loadState();
+let selectedSection='splunk';
+let quiz={mode:'study',section:null,items:[],index:0,score:0,checked:false,stats:{}};
+
+const $=id=>document.getElementById(id);
+const screens=['homeScreen','sectionScreen','quizScreen','resultScreen'];
+function showScreen(id){
+  screens.forEach(s=>$(s).classList.toggle('active',s===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function sectionQuestions(id){return questions.filter(q=>q.s===id)}
+function sectionProgress(id){
+  const qs=sectionQuestions(id);
+  const p=state.progress[id];
+  const answered=qs.filter(q=>p.answered[q.id]).length;
+  const correct=qs.filter(q=>p.correct[q.id]).length;
+  const pct=qs.length?Math.round(answered/qs.length*100):0;
+  const acc=answered?Math.round(correct/answered*100):null;
+  return {total:qs.length,answered,correct,remaining:qs.length-answered,pct,acc};
+}
+function overallProgress(){
+  const all=SECTIONS.map(s=>sectionProgress(s.id));
+  const answered=all.reduce((n,x)=>n+x.answered,0);
+  const total=questions.length;
+  return {answered,total,pct:Math.round(answered/total*100)};
+}
+function statusOf(p){
+  if(p.answered===0)return 'Not started';
+  if(p.answered===p.total)return 'Completed';
+  return 'In progress';
+}
+
+function renderHome(){
+  const list=$('studyList');
+  list.innerHTML='';
+  SECTIONS.forEach((s,i)=>{
+    const p=sectionProgress(s.id);
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='study-row'+(s.id===selectedSection?' selected':'');
+    btn.innerHTML=`
+      <div class="section-icon">${s.icon}</div>
+      <div>
+        <div class="section-name">${s.name}</div>
+        <div class="section-meta">${s.short} · ${p.answered}/${p.total} done</div>
+      </div>
+      <div class="percent-pill">
+        <strong>${p.pct}%</strong>
+        <span>${p.total} Q</span>
+      </div>`;
+    btn.addEventListener('click',()=>{
+      selectedSection=s.id;
+      renderHome();
+      renderSection();
+      showScreen('sectionScreen');
+    });
+    list.appendChild(btn);
+  });
+  $('totalQuestionsLabel').textContent=`${questions.length} questions`;
+}
+
+function renderSection(){
+  const s=SECTIONS.find(x=>x.id===selectedSection);
+  const p=sectionProgress(selectedSection);
+  const o=overallProgress();
+  $('sectionCounterPill').textContent=`${p.answered} / ${p.total}`;
+  $('sectionTitle').textContent=`${s.short} — ${s.name}`;
+  $('sectionDonut').style.setProperty('--p',p.pct);
+  $('sectionPercent').textContent=`${p.pct}%`;
+  $('answeredNum').textContent=p.answered;
+  $('answeredText').textContent=`/ ${p.total} answered`;
+  $('correctNum').textContent=p.correct;
+  $('remainingNum').textContent=p.remaining;
+  $('accuracyValue').textContent=p.acc===null?'—':`${p.acc}%`;
+  $('statusValue').textContent=statusOf(p);
+  $('overallProgressText').textContent=`${o.answered} / ${o.total} · ${o.pct}%`;
+  $('overallBar').style.width=`${o.pct}%`;
+  $('startSectionBtn').textContent=p.answered===0?'Start this section':p.remaining===0?'Review this section':'Continue this section';
+}
+
+function startStudy(sectionId){
+  const base=sectionQuestions(sectionId);
+  const p=state.progress[sectionId];
+  const unanswered=base.filter(q=>!p.answered[q.id]);
+  const pool=unanswered.length?unanswered:base;
+  quiz={mode:'study',section:sectionId,items:shuffle(pool),index:0,score:0,checked:false,stats:{}};
+  renderQuiz();
+  showScreen('quizScreen');
+}
+
+function startExam(){
+  const stats={};
+  SECTIONS.forEach(s=>stats[s.id]={right:0,total:0});
+  quiz={mode:'exam',section:null,items:shuffle(questions),index:0,score:0,checked:false,stats};
+  renderQuiz();
+  showScreen('quizScreen');
+}
+
+function renderQuiz(){
+  if(quiz.index>=quiz.items.length){
+    if(quiz.mode==='exam') return showResults();
+    renderSection();
+    renderHome();
+    showScreen('sectionScreen');
+    return;
+  }
+
+  const q=quiz.items[quiz.index];
+  const s=SECTIONS.find(x=>x.id===q.s);
+  quiz.checked=false;
+  $('quizModeLabel').textContent=quiz.mode==='exam'?'Mock assessment':'Study mode';
+  $('quizClassLabel').textContent=`${s.short} — ${s.name}`;
+  $('quizPosition').textContent=`${quiz.index+1} / ${quiz.items.length}`;
+  $('quizBar').style.width=`${((quiz.index+1)/quiz.items.length)*100}%`;
+  $('questionType').textContent=q.t;
+  $('questionText').textContent=q.q;
+  $('feedback').className='feedback';
+  $('feedback').innerHTML='';
+  $('checkBtn').disabled=false;
+  $('nextBtn').disabled=true;
+  $('nextBtn').textContent=quiz.index===quiz.items.length-1?(quiz.mode==='exam'?'Finish':'Done'):'Next';
+
+  const options=shuffle(q.a.map((text,idx)=>({text,idx})));
+  const form=$('answersForm');
+  form.innerHTML='';
+  options.forEach(opt=>{
+    const label=document.createElement('label');
+    label.className='answer';
+    const input=document.createElement('input');
+    input.type='radio'; input.name='answer'; input.value=opt.idx;
+    const span=document.createElement('span');
+    span.textContent=opt.text;
+    label.append(input,span);
+    form.appendChild(label);
+  });
+}
+
+function checkAnswer(){
+  if(quiz.checked)return;
+  const selected=$('answersForm').querySelector('input[name="answer"]:checked');
+  if(!selected){
+    $('feedback').className='feedback show';
+    $('feedback').innerHTML='<strong>Select an answer first.</strong>';
+    return;
+  }
+
+  quiz.checked=true;
+  const q=quiz.items[quiz.index];
+  const chosen=Number(selected.value);
+  const ok=chosen===q.correct;
+  if(ok)quiz.score++;
+
+  if(quiz.mode==='study'){
+    state.progress[q.s].answered[q.id]=true;
+    state.progress[q.s].correct[q.id]=ok;
+    saveState();
+  }else{
+    quiz.stats[q.s].total++;
+    if(ok)quiz.stats[q.s].right++;
+  }
+
+  [...$('answersForm').querySelectorAll('.answer')].forEach(label=>{
+    const input=label.querySelector('input');
+    input.disabled=true;
+    if(Number(input.value)===q.correct)label.classList.add('correct');
+    else if(input.checked&&!ok)label.classList.add('wrong');
+  });
+
+  $('feedback').className='feedback show';
+  $('feedback').innerHTML=`
+    <strong>${ok?'✅ Correct':'❌ Not quite'}</strong><br>
+    ${q.e}<br>
+    <strong>Correct answer:</strong> ${q.a[q.correct]}
+  `;
+  $('checkBtn').disabled=true;
+  $('nextBtn').disabled=false;
+}
+
+function showResults(){
+  const total=quiz.items.length;
+  const pct=Math.round(quiz.score/total*100);
+  $('resultScore').textContent=`${pct}%`;
+  $('resultFraction').textContent=`${quiz.score} / ${total} correct`;
+
+  let msg='';
+  if(pct>=90) msg='<strong>Excellent readiness.</strong> You are at a strong level for the assessment. Your best next step is explaining troubleshooting answers out loud in English and reviewing the hands-on.';
+  else if(pct>=80) msg='<strong>Good foundation.</strong> Review every class below 80%, then take the mock assessment again without Notes.';
+  else if(pct>=70) msg='<strong>Promising, but reinforce weak areas.</strong> Focus on tool selection, SSO troubleshooting, deployment flow, and SOAP authentication/errors.';
+  else msg='<strong>Do another focused review.</strong> Study the weak classes first, then retake the assessment.';
+  $('resultMessage').innerHTML=msg;
+
+  const wrap=$('resultBreakdown');
+  wrap.innerHTML='';
+  SECTIONS.forEach(s=>{
+    const st=quiz.stats[s.id]||{right:0,total:0};
+    const p=st.total?Math.round(st.right/st.total*100):0;
+    const row=document.createElement('div');
+    row.className='result-row';
+    row.innerHTML=`<strong>${s.short} — ${s.name}</strong><span>${st.right}/${st.total} · ${p}%</span>`;
+    wrap.appendChild(row);
+  });
+  showScreen('resultScreen');
+}
+
+$('backFromSection').addEventListener('click',()=>{renderHome();showScreen('homeScreen')});
+$('startSectionBtn').addEventListener('click',()=>startStudy(selectedSection));
+$('resetSectionBtn').addEventListener('click',()=>{
+  const s=SECTIONS.find(x=>x.id===selectedSection);
+  if(confirm(`Reset all progress for ${s.name}?`)){
+    state.progress[selectedSection]={answered:{},correct:{}};
+    saveState();
+    renderSection();
+    renderHome();
+  }
+});
+$('examModeBtn').addEventListener('click',startExam);
+$('backFromQuiz').addEventListener('click',()=>{
+  if(quiz.mode==='study'){renderSection();renderHome();showScreen('sectionScreen')}
+  else{renderHome();showScreen('homeScreen')}
+});
+$('checkBtn').addEventListener('click',checkAnswer);
+$('nextBtn').addEventListener('click',()=>{if(quiz.checked){quiz.index++;renderQuiz()}});
+$('backFromResults').addEventListener('click',()=>{renderHome();showScreen('homeScreen')});
+$('returnHomeBtn').addEventListener('click',()=>{renderHome();showScreen('homeScreen')});
+$('retryExamBtn').addEventListener('click',startExam);
+
+renderHome();
+</script>
+</body>
+</html>
